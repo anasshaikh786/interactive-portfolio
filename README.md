@@ -42,3 +42,13 @@ Edit the resume content in:
 ```text
 src/data/resume.js
 ```
+
+## Resume PDF
+
+Place your PDF here:
+
+```text
+public/resume/Mohd-Anas-Shaikh-Resume.pdf
+```
+
+The Resume button downloads that file directly from the React public folder.

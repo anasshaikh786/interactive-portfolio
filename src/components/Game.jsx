@@ -1,12 +1,20 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Download, Volume2, VolumeX } from "lucide-react";
 import { levels } from "../data/resume";
 import Robot from "./Robot";
 import {
-  HomeScene, AboutScene, SkillsScene, ExperienceScene,
-  ProjectsScene, EducationScene, AchievementsScene, ContactScene
+  AboutScene,
+  AchievementsScene,
+  ContactScene,
+  EducationScene,
+  ExperienceScene,
+  HomeScene,
+  ProjectsScene,
+  SkillsScene,
 } from "./Scenes";
-import { ChevronLeft, ChevronRight, Download, Volume2, VolumeX } from "lucide-react";
+
+const RESUME_FILE = "/resume/Mohd-Anas-Shaikh-Resume.pdf";
 
 const sceneMap = {
   home: HomeScene,
@@ -25,40 +33,44 @@ const Game = () => {
   const [walking, setWalking] = useState(false);
   const [muted, setMuted] = useState(true);
 
-  const next = useCallback(() => {
-    setIndex((i) => {
-      if (i >= levels.length - 1) return i;
-      setDirection("right");
-      setWalking(true);
-      setTimeout(() => setWalking(false), 700);
-      return i + 1;
-    });
-  }, []);
-  const prev = useCallback(() => {
-    setIndex((i) => {
-      if (i <= 0) return i;
-      setDirection("left");
-      setWalking(true);
-      setTimeout(() => setWalking(false), 700);
-      return i - 1;
-    });
+  const startWalk = useCallback((nextDirection) => {
+    setDirection(nextDirection);
+    setWalking(true);
+    window.setTimeout(() => setWalking(false), 700);
   }, []);
 
+  const next = useCallback(() => {
+    setIndex((currentIndex) => {
+      if (currentIndex >= levels.length - 1) return currentIndex;
+      startWalk("right");
+      return currentIndex + 1;
+    });
+  }, [startWalk]);
+
+  const prev = useCallback(() => {
+    setIndex((currentIndex) => {
+      if (currentIndex <= 0) return currentIndex;
+      startWalk("left");
+      return currentIndex - 1;
+    });
+  }, [startWalk]);
+
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft") prev();
+    const handleKeyDown = (event) => {
+      if (event.key === "ArrowRight") next();
+      if (event.key === "ArrowLeft") prev();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [next, prev]);
 
   const CurrentScene = sceneMap[levels[index].id];
   const progress = ((index + 1) / levels.length) * 100;
+  const characterPosition = 8 + index * (84 / (levels.length - 1));
 
   return (
     <div className="game-root">
-      {/* Sky background layers */}
       <div className="sky-gradient" />
       <div className="sky-sun" />
       <div className="sky-clouds">
@@ -70,53 +82,51 @@ const Game = () => {
       <div className="far-mountains" />
       <div className="near-mountains" />
 
-      {/* Top HUD */}
       <header className="hud-top">
         <div className="hud-brand">
           <div className="hud-badge">A</div>
           <div>
             <div className="hud-title">Anas&#39;s Sky Quest</div>
-            <div className="hud-sub">Interactive Resume · 2025</div>
+            <div className="hud-sub">Interactive Resume &middot; 2025</div>
           </div>
         </div>
+
         <div className="hud-progress">
           <div className="hud-progress-label">
-            Level {index + 1} / {levels.length} — <strong>{levels[index].label}</strong>
+            Level {index + 1} / {levels.length} &mdash; <strong>{levels[index].label}</strong>
           </div>
           <div className="hud-progress-bar">
             <div className="hud-progress-fill" style={{ width: `${progress}%` }} />
           </div>
         </div>
+
         <div className="hud-actions">
           <button className="icon-btn" onClick={() => setMuted(!muted)} aria-label="toggle sound">
-            {muted ? <VolumeX size={16}/> : <Volume2 size={16}/>}
+            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
-          <button className="icon-btn primary" onClick={() => window.print()}>
-            <Download size={16}/> <span>Resume</span>
-          </button>
+          <a className="icon-btn primary" href={RESUME_FILE} download>
+            <Download size={16} />
+            <span>Resume</span>
+          </a>
         </div>
       </header>
 
-      {/* Level chip nav */}
-      <nav className="level-nav">
-        {levels.map((l, i) => (
+      <nav className="level-nav" aria-label="Resume sections">
+        {levels.map((level, levelIndex) => (
           <button
-            key={l.id}
-            className={`level-chip ${i === index ? "active" : ""} ${i < index ? "done" : ""}`}
+            key={level.id}
+            className={`level-chip ${levelIndex === index ? "active" : ""} ${levelIndex < index ? "done" : ""}`}
             onClick={() => {
-              setDirection(i > index ? "right" : "left");
-              setWalking(true);
-              setTimeout(() => setWalking(false), 700);
-              setIndex(i);
+              startWalk(levelIndex > index ? "right" : "left");
+              setIndex(levelIndex);
             }}
           >
-            <span className="chip-num">{i + 1}</span>
-            <span className="chip-label">{l.label}</span>
+            <span className="chip-num">{levelIndex + 1}</span>
+            <span className="chip-label">{level.label}</span>
           </button>
         ))}
       </nav>
 
-      {/* Scene content */}
       <main className="scene-stage">
         <AnimatePresence mode="wait">
           <motion.div
@@ -132,22 +142,17 @@ const Game = () => {
         </AnimatePresence>
       </main>
 
-      {/* Ground with character */}
       <div className="ground-layer">
         <div className="ground-grass" />
         <div className="ground-dirt">
           <div className="ground-pattern" />
         </div>
-        <div
-          className="character-stage"
-          style={{ left: `${8 + (index * (84 / (levels.length - 1)))}%` }}
-        >
+        <div className="character-stage" style={{ left: `${characterPosition}%` }}>
           <Robot walking={walking} facing={direction} />
           <div className="character-shadow" />
         </div>
       </div>
 
-      {/* Side nav arrows */}
       <button className="side-nav left" onClick={prev} disabled={index === 0} aria-label="previous">
         <ChevronLeft size={28} />
       </button>
@@ -155,9 +160,8 @@ const Game = () => {
         <ChevronRight size={28} />
       </button>
 
-      {/* Bottom hint */}
       <div className="bottom-hint">
-        Use <kbd>←</kbd> <kbd>→</kbd> arrow keys or the side buttons to navigate
+        Use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> arrow keys or the side buttons to navigate
       </div>
     </div>
   );
