@@ -9,8 +9,8 @@ export const resumeData = {
   summary:
     "Full Stack Developer with nearly 3 years of experience building production-grade enterprise applications using React.js, Node.js, and Python, with strong expertise in Big Data integration (Cloudera Hive, HDFS) for banking systems. I own end-to-end architecture, from security compliance (LDAP, JWT, VAPT) to CI/CD automation, and enjoy turning complex requirements into reliable software that moves the business forward.",
   skills: {
-    Languages: ["Java", "Python", "JavaScript", "SQL"],
-    Frontend: ["React.js", "Redux", "HTML/CSS", "Tailwind CSS", "Bootstrap"],
+    Languages: ["Java", "Python", "JavaScript (ES6+)", "SQL"],
+    Frontend: ["React.js", "Redux", "HTML5/CSS3", "Tailwind CSS", "Bootstrap"],
     Backend: ["Node.js", "Express.js", "REST APIs"],
     Databases: ["MongoDB", "PostgreSQL", "Oracle"],
     "Big Data": ["Apache Hive", "HDFS", "WebHDFS", "Hadoop", "Parquet"],
