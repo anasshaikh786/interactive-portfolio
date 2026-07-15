@@ -37,7 +37,7 @@ export const resumeData = {
     {
       name: "SkillBridge - Knowledge Hub",
       stack: "MERN (React, Node, Express, MongoDB)",
-      link: "github.com/anasshaikh786/skillbridge-e-learning-platform",
+      link: "github.com/anasshaikh786/skillbridge-knowledge-hub",
       preview: "https://skillbridge-knowledge-hub.vercel.app/",
       points: [
         "•Built a full-stack ed-tech platform with course browsing/purchase and instructor analytics.",
